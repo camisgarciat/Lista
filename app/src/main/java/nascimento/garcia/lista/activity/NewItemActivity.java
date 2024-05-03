@@ -52,7 +52,7 @@ public class NewItemActivity extends AppCompatActivity {
                     Toast.makeText(NewItemActivity.this, "É necessário selecionar uma imagem!", Toast.LENGTH_LONG).show();
                     return;
                 }
-                EditText etTitle = findViewById(R.id.etTitle):
+                EditText etTitle = findViewById(R.id.etTitle);
                 String title = etTitle.getText().toString();
                 if(title.isEmpty()) {
                     Toast.makeText(NewItemActivity.this, "É necessário inserir um título", Toast.LENGTH_LONG).show();
@@ -60,6 +60,19 @@ public class NewItemActivity extends AppCompatActivity {
 
                 }
                 EditText etDesc = findViewById(R.id.etDesc);
+                String description = etDesc.getText().toString();
+                if (description.isEmpty()) {
+                    Toast.makeText(NewItemActivity.this, "É necessário inserir uma descrição", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                Intent i = new Intent();
+                i.setData(photoSelected);
+                i.putExtra("title", title);
+                i.putExtra("description", description);
+                setResult(Activity.RESULT_OK, i);
+                finish();
+
+
             }
         });
     }
@@ -70,7 +83,7 @@ public class NewItemActivity extends AppCompatActivity {
         if(requestCode== PHOTO_PICKER_REQUEST) {
             if(resultCode== Activity.RESULT_OK) {
                 photoSelected = data.getData();
-                ImageView imvfotoPreview findViewById(R.id.imvPhotoPreview);
+                ImageView imvfotoPreview = findViewById(R.id.imvPhotoPreview);
                 imvfotoPreview.setImageURI(photoSelected);
             }
         }
