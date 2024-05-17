@@ -1,28 +1,34 @@
 package nascimento.garcia.lista.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
 import nascimento.garcia.lista.R;
 import nascimento.garcia.lista.adapter.MyAdapter;
 import nascimento.garcia.lista.adapter.MyViewHolder;
+import nascimento.garcia.lista.model.MainActivityViewModel;
 import nascimento.garcia.lista.model.MyItem;
+import nascimento.garcia.lista.util.Util;
 
 public class MainActivity extends AppCompatActivity {
     static int NEW_ITEM_REQUEST = 1;
-    List<MyItem> itens = new ArrayList<>();
+
     MyAdapter myAdapter;
 
     @Override
@@ -50,8 +56,11 @@ public class MainActivity extends AppCompatActivity {
         });
         //Obtem o RecycleView
         RecyclerView rvItens = findViewById(R.id.rvItens);
-        //cria o MyAdapter e seta no RecycleView.
-        myAdapter = new MyAdapter(this, itens);
+        //obtem o ViewModel referente a MainActivity
+        MainActivityViewModel vm = new ViewModelProvider( this ).get(MainActivityViewModel.class );
+        //obtem a lista a partir do ViewModel e repassada para o Adapter
+        List<MyItem> itens = vm.getItens();
+        myAdapter = new MyAdapter(this,itens);
         rvItens.setAdapter(myAdapter);
         //o método  indica ao RecycleView que nao ha variacao de tamanho entre os itens da lista
         rvItens.setHasFixedSize(true);
@@ -77,10 +86,21 @@ public class MainActivity extends AppCompatActivity {
                 MyItem myItem = new MyItem();
                 //obtem os dados retornados por NewItemActivity e os guarda dentro de myItem
                 myItem.title = data.getStringExtra("title");
-                myItem.description =
-                        data.getStringExtra("description");
-                myItem.photo = data.getData();
-                // adiciona o item a uma lista de itens
+                myItem.description = data.getStringExtra("description");
+                Uri selectedPhotoURI = data.getData();
+                try {
+            //carrega a imagem e a guarda dentro de um Bitmap
+            Bitmap photo = Util.getBitmap( MainActivity.this, selectedPhotoURI, 100, 100 );
+            //guarda o Bitmap da imagem dentro de um objeto do tipo MyItem
+                     myItem.photo = photo;
+            //a exceção é disparada caso o arquivo de imagem não seja encontrado
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                while (enumeration.hasMoreElements()) {
+                    Object nextElement =  enumeration.nextElement();
+
+                }
                 itens.add(myItem);
                 //notifica o Adapter
                 myAdapter.notifyItemInserted(itens.size() - 1);
