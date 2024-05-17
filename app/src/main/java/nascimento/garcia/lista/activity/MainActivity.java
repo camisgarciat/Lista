@@ -16,13 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nascimento.garcia.lista.R;
+import nascimento.garcia.lista.adapter.MyAdapter;
 import nascimento.garcia.lista.adapter.MyViewHolder;
 import nascimento.garcia.lista.model.MyItem;
 
 public class MainActivity extends AppCompatActivity {
     static int NEW_ITEM_REQUEST = 1;
     List<MyItem> itens = new ArrayList<>();
-    MyViewHolder.MyAdapter myAdapter;
+    MyAdapter myAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         //Obtem o RecycleView
         RecyclerView rvItens = findViewById(R.id.rvItens);
         //cria o MyAdapter e seta no RecycleView.
-        myAdapter = new MyViewHolder.MyAdapter(this, itens);
+        myAdapter = new MyAdapter(this, itens);
         rvItens.setAdapter(myAdapter);
         //o método  indica ao RecycleView que nao ha variacao de tamanho entre os itens da lista
         rvItens.setHasFixedSize(true);
