@@ -19,34 +19,46 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import nascimento.garcia.lista.R;
+import nascimento.garcia.lista.model.NewItemActivityViewModel;
 
 public class NewItemActivity extends AppCompatActivity {
     static int PHOTO_PICKER_REQUEST = 1;
-    //guarda o endereco da foto selecionada pelo usuario
-    Uri photoSelected= null;
 
     @Override
     //Cria a interface
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_item);
+        //obtem o viewModel
+        NewItemActivityViewModel vm = new ViewModelProvider(this).get(NewItemActivityViewModel.class);
+        //obtem o endereco URI guardado dentro do ViewModel
+        Uri selectPhotoLocation = vm.getSelectPhotoLocation();
+        //se o endereco nao for nulo
+        if (selectPhotoLocation != null) {
+            // seta a imagem no ImageView da tela
+            ImageView imvfotoPreview = findViewById(R.id.imvPhotoPreview);
+            imvfotoPreview.setImageURI(selectPhotoLocation);
+        }
+
+
 
         ImageButton imbCl = findViewById(R.id.imbCl);
         //define o ouvidor de cliques
         imbCl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //executa a abertura da galeria para escolher a foto
                 //cria um Intent implícito
                 Intent photoPickerIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                 // configura no intent criado para selecionar documentos com mimetype
                 photoPickerIntent.setType("image/*");
                 //Executa o intent
-                startActivityForResult(photoPickerIntent,PHOTO_PICKER_REQUEST);
+                startActivityForResult(photoPickerIntent, PHOTO_PICKER_REQUEST);
             }
         });
 
@@ -58,15 +70,18 @@ public class NewItemActivity extends AppCompatActivity {
             //verifica se os campos foram preenchidos pelo usuario
             public void onClick(View v) {
                 // Se o campo estiver vazio...
-                if(photoSelected== null) {
+                NewItemActivityViewModel vm = new ViewModelProvider(NewItemActivity.this).get(NewItemActivityViewModel.class);
+                //obtem o endereco URI guardado dentro do ViewModel
+                Uri photoSelected = vm.getSelectPhotoLocation();
+                if (photoSelected == null) {
                     //...exibe uma mensagem de erro
                     Toast.makeText(NewItemActivity.this, "É necessário selecionar uma imagem!", Toast.LENGTH_LONG).show();
                     return;
                 }
                 EditText etTitle = findViewById(R.id.etTitle);
                 String title = etTitle.getText().toString();
-                 // Se o campo estiver vazio...
-                if(title.isEmpty()) {
+                // Se o campo estiver vazio...
+                if (title.isEmpty()) {
                     //...exibe uma mensagem de erro
                     Toast.makeText(NewItemActivity.this, "É necessário inserir um título", Toast.LENGTH_LONG).show();
                     return;
@@ -105,10 +120,14 @@ public class NewItemActivity extends AppCompatActivity {
         if(requestCode== PHOTO_PICKER_REQUEST) {
             //verifica se resultCode eh um codigo de sucesso
             if(resultCode== Activity.RESULT_OK) {
-                //obtem o Uri da imagem escolhida e guarda dentro do atributo de classe photoSelected
-                photoSelected = data.getData();
+                Uri photoSelected = data.getData();
+                //obtem o ViewModel
+                NewItemActivityViewModel vm = new ViewModelProvider( this).get( NewItemActivityViewModel.class );
+                //guarda o URI da imagem escolhida dentro do ViewModel
+                vm.setSelectPhotoLocation(photoSelected);
+
                 //obtem o ImageView atraves do id
-                ImageView imvfotoPreview = findViewById(R.id.imvPhotoPreview);
+                 ImageView imvfotoPreview = findViewById(R.id.imvPhotoPreview);
                 //seta o Uri para que a foto seja exibida na app
                 imvfotoPreview.setImageURI(photoSelected);
             }

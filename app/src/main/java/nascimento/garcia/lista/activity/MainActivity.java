@@ -1,6 +1,7 @@
 package nascimento.garcia.lista.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -29,7 +30,9 @@ import nascimento.garcia.lista.util.Util;
 public class MainActivity extends AppCompatActivity {
     static int NEW_ITEM_REQUEST = 1;
 
+
     MyAdapter myAdapter;
+    ArrayList itens = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,10 +100,11 @@ public class MainActivity extends AppCompatActivity {
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
-                while (enumeration.hasMoreElements()) {
-                    Object nextElement =  enumeration.nextElement();
-
-                }
+                //obtem o ViewMode
+                MainActivityViewModel vm = new ViewModelProvider( this ).get(MainActivityViewModel.class );
+                //obtem em seguida a lista de itens guardada pelo  ViewModel
+                List<MyItem> itens = vm.getItens();
+                //guarda o novo item dentro dessa lista
                 itens.add(myItem);
                 //notifica o Adapter
                 myAdapter.notifyItemInserted(itens.size() - 1);
